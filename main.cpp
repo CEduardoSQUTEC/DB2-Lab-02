@@ -233,7 +233,3 @@ class Sequential_File{
 int main() {
   
 }
-
-int main() {
-  
-}
