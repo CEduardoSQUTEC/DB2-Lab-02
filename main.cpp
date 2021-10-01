@@ -20,6 +20,22 @@ struct Registro{
   char location;
   int nextPos;
   char nextLocation;
+
+  Registro(string codigo, string nombre, string carrera, int ciclo){
+    strcpy(this->codigo, codigo.c_str());
+    strcpy(this->nombre, nombre.c_str());
+    strcpy(this->carrera, carrera.c_str());
+    this->ciclo = ciclo;
+  }
+  Registro(){
+  }
+
+  void display(){
+    cout<<"\n"<<string(codigo,sizeof(codigo));
+    cout<<string(nombre,sizeof(nombre));
+    cout<<string(carrera,sizeof(carrera));
+    cout<<ciclo;
+  }
 };
 
 struct comparator{
@@ -123,16 +139,17 @@ class Sequential_File{
       }
       else{
         auto prev = search(registro.nombre);
-        prev.nextPos = datos.tellp();
-        prev.nextLocation = 'a';
-
-        update(prev);
 
         registro.location = 'a';
         registro.pos = datos.tellp();
 
         registro.nextPos = prev.nextPos;
         registro.nextLocation = prev.nextLocation;
+
+        prev.nextPos = datos.tellp();
+        prev.nextLocation = 'a';
+
+        update(prev);
 
         datos.write((char*)&registro, sizeof(Registro));
         auxSize++;
@@ -172,6 +189,7 @@ class Sequential_File{
   }
 
   Registro search(string key){
+    key.erase(remove(key.begin(), key.end(), ' '), key.end());
     ifstream datos;
     datos.open("datos.bin", ios::binary);
 
@@ -201,9 +219,11 @@ class Sequential_File{
     Registro registroNext = registro;
 
     while(string(registro.nombre).compare(key) < 0 && readNext(registroNext)){
-      if(string(registroNext.nombre).compare(key) == 0){
+      string nombre_n = string(registroNext.nombre,15);
+      nombre_n.erase(remove(nombre_n.begin(), nombre_n.end(), ' '), nombre_n.end());
+      if(nombre_n.compare(key) == 0){
         return registroNext;
-      }else if(string(registroNext.nombre).compare(key) > 0){
+      }else if(nombre_n.compare(key) > 0){
         return registro;
       }
       registro = registroNext;
@@ -214,13 +234,20 @@ class Sequential_File{
   }
 
   vector<Registro> rangeSearch(string begin, string end){
+
+    begin.erase(remove(begin.begin(), begin.end(), ' '), begin.end());
+    end.erase(remove(end.begin(), end.end(), ' '), end.end());
+
     vector<Registro> registros = {};
     Registro registro = search(begin);
 
-    if(string(registro.nombre).compare(begin)< 0 || string(registro.nombre).compare(end) > 0){
+    string nombre_r = string(registro.nombre,15);
+    nombre_r.erase(remove(nombre_r.begin(), nombre_r.end(), ' '), nombre_r.end());
+
+    if(nombre_r.compare(begin)< 0 || nombre_r.compare(end) > 0){
       readNext(registro);
     }
-    while(string(registro.nombre).compare(begin)>= 0 && string(registro.nombre).compare(end)<=0){
+    while(nombre_r.compare(begin)>= 0 && nombre_r.compare(end)<=0){
       registros.push_back(registro);
       if(!readNext(registro)){
         break;
@@ -231,5 +258,26 @@ class Sequential_File{
 };
 
 int main() {
-  
+  vector<Registro> registros = {};
+  Registro registro("0008 ","Juan Pablo          ","CS             ",6);
+  Registro registro2("0007 ","Pedro Pablo         ","CS             ",7);
+  Registro registro3("0006 ","Perez Pablo         ","CS             ",4);
+  registros.push_back(registro);
+  Sequential_File s;
+
+  s.insertAll(registros);
+
+  s.add(registro);
+  s.add(registro3);
+  s.add(registro2);
+
+  cout<<"Simple search"<<endl;
+  registro = s.search("Perez Pablo");
+  registro.display();
+
+  cout<<endl<<endl<<endl<<"Range search"<<endl;
+  registros = s.rangeSearch("Juan Pablo","Perez Pablo");
+  for(auto registro:registros){
+    registro.display();
+  }
 }
