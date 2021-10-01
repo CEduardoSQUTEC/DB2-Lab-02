@@ -16,7 +16,6 @@ struct Registro{
   char location;
   int nextPos;
   char nextLocation;
-
 };
 
 class Sequential_File{
@@ -108,7 +107,6 @@ class Sequential_File{
 
 };
 
-
 int main() {
-  
+
 }
