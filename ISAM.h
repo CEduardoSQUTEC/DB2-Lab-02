@@ -28,13 +28,10 @@ public:
         std::string prefix = filename.substr(0, filename.find(".dat"));
         for (int i = 0; i < 3; ++i) {
             _index[i] = prefix + ".index" + std::to_string(i) + ".dat";
-            std::ofstream index(_index[i], std::ios::trunc);
+            std::ofstream index(_index[i]);
             if (!index.is_open()) throw std::bad_exception("Cannot create index files.");
         }
     }
-
-
-
 };
 
 
