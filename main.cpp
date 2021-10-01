@@ -256,6 +256,7 @@ public:
 };
 
 int main() {
+    cout << "=== Sequential File Tests ===";
     vector<Registro> registros = {};
     Registro registro("0008 ", "Juan Pablo          ", "CS             ", 6);
     Registro registro2("0007 ", "Pedro Pablo         ", "CS             ", 7);
@@ -278,4 +279,7 @@ int main() {
     for (auto registro: registros) {
         registro.display();
     }
+
+    cout << "=== ISAM Tests ===";
+
 }
